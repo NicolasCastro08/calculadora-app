@@ -9,10 +9,39 @@ import { createEngine } from "./utils/calcEngine"
 export default function App() {
   const[mode, setMode] =useState ("dark");
   const theme = themes[mode];
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor : theme.bg }]}>
       <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <StatusBar barStyle={mode === "dark" ? "light-content" : "dark-content"} />
+
+      <View style={styles.topBar}>
+        </View>
+
+        <Display
+            theme={theme}
+            expression={state.expression}
+            value={state.display}  
+          />
+
+
+        <Pressable
+          onPress={() => setMode((m) (m=== "dark" ? "light" : "dark"))}
+          styles={({pressed})} => [
+            styles.toggle,
+          {
+            backgroundColor: theme.card,
+            opacity: pressed ? 0.75 : 1,
+            borderColor: theme.stroke
+          }
+        ]} 
+        
+
+          <Text style= {{ color: theme.text, fontWeight: "700"}}>
+            {mode === "dark" ? "Escuro": "Claro"}
+            </Text>
+        </pressable>
+      </View>
     </View>
   );
 }
@@ -20,9 +49,27 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 18,
+    paddingTop: 40,
   },
+  topBar: {
+    alignItems: "flex-end",
+    marginBottom: 6,
+  },
+  toggle:{
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  pad: {
+    gap:14,
+    paddingBottom:18,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 14
+  }
 });
 
