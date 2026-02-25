@@ -1,2 +1,31 @@
+Abrir o terminal - CRTL + '
+------------------------------------------------------------------------------
+
+cd calculadora
+
+- Criar um projeto React Native com Expo:
+npx create-expo-app@latest NomeProjeto --template blank
+
+------------------------------------------------------------------------------
+
 git config --global user.name NicolasCastro08
 git config --global user.email nicolasferreia@gmail.com
+
+------------------------------------------------------------------------------
+
+- Atualizar os pacotes do Node e adicionar bibliotecas:
+npm i
+npx expo install react-dom react-native-web @expo/metro-runtime
+npx expo install @react-native-community/slider
+npx expo install expo-av
+
+------------------------------------------------------------------------------
+
+- Executar o projeto:
+npx expo start --localhost --android
+npx expo start --web
+
+
+
+
+
