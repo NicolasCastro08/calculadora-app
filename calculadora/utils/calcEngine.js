@@ -1,38 +1,129 @@
 import { fixFloat, formatNumber, toNumber } from "./format";
 
-const OPS = new Set(["+", "-", "/"]);
+const OPS = new Set(["+", "-", "*", "/"]);
 
-export function createEngine({ locale = "pt-BR"} = {}) {
-
+export function createEngine({ locale = "pt-BR" } = {}) {
     function initialState() {
         return {
             display: formatNumber(0, locale),
-             expression: "",
+            expression: "",
             storedValue: null,
             pendingOp: null,
             isNewEntry: true,
-             lastKey: null,
+            lastKey: null,
         };
     }
 
     function reduce(state, key) {
+        const s = { ...state, lastKey: kew };
 
+        // Helpers
+        const current = toNumber(s.display);
+        const setDisplayNumber = (n) => {
+            s.display = formatNumber(n, locale);
+        }
+
+        // Digits / Dot
+        if (isDigit(key) || key === ".") {
+            return onDigitOrDot(s, key, locale);
+        }
+
+        // Clear
+        if (key === "C") {
+            return initialState();
+        }
+
+        // Sign => inverter número atual para positivo ou negativo
+        if(key === "SIGN") {
+            if (!Number.isFinite(current)) return s;
+            setDisplayNumber(current * -1);
+            s.isNewEntry = false;
+            return s;
+        }
+
+        // Percent
+        if(key === "%") {
+            setDisplayNumber(current / 100);
+            s.isNewEntry = true;
+            s.expression = `${formatNumber(current, locale)} %`;
+            return s;
+        }
+
+        // Operator
+        if (OPS.has(key)) {
+            return onOperator(s, key, locale);
+        }
+
+        // Equal
+        if(key === "=") {
+            return onEqual(s, locale);
+        }
+
+        return s;
     }
 
     function onDigitOrDot(s, key, locale) {
-        
+        const raw = displayToRaw(s.display);
+
+        let nextRaw;
+        if (s.isNewEntry) {
+            nextRaw = key === "." ? "0." : key;
+            s.isNewEntry = false;
+        } else {
+            if (key === "." && raw.includes(".")) return s;
+            nextRaw = raw === "0" && key !== "." ? key : raw + key;
+        }
+
+        if (nextRaw.replace("-", "").lenght > 14) return s;
+
+        const n = Number(nextRaw)
+        if (!Number.isFinite(n)) {
+            s.display = "Erro";
+            s.isNewEntry = true;
+            return s;
+        }
+
+        if (nextRaw.endsWith(".")) {
+            s.display = formatNumber(n, locale).replace(/0$/, "") + ",";
+            return s;
+        }
+
+        s.display = formatNumber(n, locale);
+        return s;
     }
 
     function onOperator(s, op, locale) {
+        const current = toNumber(s.display);
+        if (!Number.isFinite(current)) return s;
 
+        if (s.pendingOp && s.storedValue !== null && !isNewEntry){
+            const computed = compute(s.storedValue, current, s.pendingOp);
+            if (!Number.isFinite(computed)) {
+                s.display = 'Erro';
+                s.expression = "";
+                s.pendingOp = null;
+                s.storedValue = null;
+                s.isNewEntry = true;
+                return s;
+            }
+            s.storedValue = compute;
+            s.display = formatNumber(computed, locale);
+        } else if (s.storedValue === null) {
+            s.storedValue = current;
+        }
+
+        s.pendingOp = op;
+        s.isNewEntry = true;
+        s.expression = `${formatNumber(s.storedValue, locale)} ${symbol(op)} `;
+        return s;    
     }
 
     function onEqual(s, locale) {
         const current = toNumber(s.display);
-        if (s.pendingOp && s.storedValue != null && Number.isFinite(current)){
-           const computed =  compute(s.storedValue, current, s.pendingOp);
+        if (s.pendingOp && s.storedValue != null && Number.isFinite(current)) {
+            const computed = compute(s.storedValue, current, s.pendingOp);
 
-            s.expression = `${formatNumber(s.storedValue, locale)} ${symbol(s.pendingOp)} ${formatNumber(current, locale)}}`
+            s.espression = `${formatNumber(s.storedValue, locale)} ${symbol(s.pendingOp)} ${formatNumber(current, locale)}}`
 
             if (!Number.isFinite(computed)) {
                 s.display = "Erro";
@@ -42,7 +133,7 @@ export function createEngine({ locale = "pt-BR"} = {}) {
 
             s.storedValue = null;
             s.pendingOp = null;
-            s.isNewEntry = null;
+            s.isNewEntry = true;
         }
         return s;
     }
@@ -52,16 +143,17 @@ export function createEngine({ locale = "pt-BR"} = {}) {
         const B = Number(b);
         switch (op) {
             case "+":
-              return fixFloat(A + B);
+                return fixFloat(A + B);
             case "-":
-              return fixFloat(A + B);
+                return fixFloat(A - B);
             case "*":
-              return fixFloat(A + B);
+                return fixFloat(A * B);
             case "/":
-              return B === 0 ? NaN : flixFloat(A / B);
+                return B === 0 ? NaN : fixFloat(A / B);
             default:
                 return NaN;
         }
+
     }
 
     function symbol(op) {
@@ -81,5 +173,6 @@ export function createEngine({ locale = "pt-BR"} = {}) {
         return normalized === "" ? "0" : normalized;
     }
 
-    return { initialState, reduce}
+    return { initialState, reduce }
+
 }
