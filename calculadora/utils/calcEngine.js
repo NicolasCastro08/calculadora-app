@@ -15,7 +15,7 @@ export function createEngine({ locale = "pt-BR" } = {}) {
     }
 
     function reduce(state, key) {
-        const s = { ...state, lastKey: kew };
+        const s = { ...state, lastKey: key };
 
         // Helpers
         const current = toNumber(s.display);

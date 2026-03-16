@@ -1,17 +1,17 @@
 export const themes = {
   dark: {
     mode: "dark",
-    bg: "#17181A",
-    card: "#202124",
+    bg: "#141518",
+    card: "#1B1C1F",
     stroke: "rgba(255,255,255,0.08)",
     text: "#F2F2F7",
     textDim: "rgba(242,242,247,0.55)",
-    op: "#8113ee",
+    op: "#0059ff",
     opText: "#F2F2F7",
-    key: "#2A2B2F",
+    key: "#1b1c1f",
     keyText: "#F2F2F7",
-    shadowDark: "rgba(0,0,0,0.55)",
-    shadowLight: "rgba(255,255,255,0.06)"
+    shadowDark: "rgba(0,0,0,0.65)",
+    shadowLight: "rgba(255,255,255,0.03)"
   },
   light: {
     mode: "light",
@@ -20,11 +20,11 @@ export const themes = {
     stroke: "rgba(17,24,39,0.08)",
     text: "#111827",
     textDim: "rgba(17,24,39,0.55)",
-    op: "#8113ee",
-    opText: "#141414",
+    op: "#0059ff",
+    opText: "#F2F2F7",
     key: "#F6F7FB",
     keyText: "#111827",
-    shadowDark: "rgba(17,24,39,0.18)",
-    shadowLight: "rgba(255,255,255,0.85)"
+    shadowDark: "rgba(0, 0, 0, 0.20)",
+    shadowLight: "rgba(255,255,255,0.9)"
   }
 }
